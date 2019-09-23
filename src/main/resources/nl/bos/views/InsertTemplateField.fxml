@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:id="vboxInsertTemplateField" prefHeight="620.0" prefWidth="650.0"
+      xmlns="http://javafx.com/javafx/8.0.121" fx:controller="nl.bos.controllers.InsertTemplateField">
+    <Button fx:id="btnExit" alignment="TOP_LEFT" mnemonicParsing="false" onAction="#handleExit" text="Exit">
+        <VBox.margin>
+            <Insets/>
+        </VBox.margin>
+    </Button>
+</VBox>

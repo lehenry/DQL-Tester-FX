@@ -26,6 +26,7 @@ import nl.bos.AttributeTableColumn;
 import nl.bos.Repository;
 import nl.bos.beans.HistoryItem;
 import nl.bos.contextmenu.ContextMenuOnResultTable;
+import nl.bos.contextmenu.ContextMenuOnStatement;
 import nl.bos.utils.*;
 import org.fxmisc.richtext.CodeArea;
 import org.json.JSONArray;
@@ -47,6 +48,7 @@ public class QueryWithResult {
     private static final Logger LOGGER = Logger.getLogger(QueryWithResult.class.getName());
 
     private ContextMenuOnResultTable contextMenuOnResultTable;
+    private ContextMenuOnStatement contextMenuOnStatement;
 
     private JSONObject jsonObject;
 
@@ -116,6 +118,9 @@ public class QueryWithResult {
             }
 
         });
+
+        contextMenuOnStatement = new ContextMenuOnStatement(statement);
+        statement.addEventHandler(MouseEvent.MOUSE_CLICKED, contextMenuOnStatement::onRightMouseClick);
 
         contextMenuOnResultTable = new ContextMenuOnResultTable(result);
         result.getSelectionModel().setCellSelectionEnabled(true);
