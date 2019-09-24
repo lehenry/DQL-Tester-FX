@@ -22,7 +22,6 @@ public class MenuItemInsertTemplateFieldAction implements EventHandler<ActionEve
     public void handle(ActionEvent actionEvent) {
         LOGGER.info(actionEvent.getSource().toString());
         LOGGER.info(statement.getText());
-
-        new InsertTemplateFieldAction(statement.getText());
+        new InsertTemplateFieldAction(statement.caretPositionProperty().getValue());
     }
 }

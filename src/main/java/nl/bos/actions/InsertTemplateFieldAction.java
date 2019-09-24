@@ -13,8 +13,8 @@ import static nl.bos.Constants.ROOT_SCENE_CSS;
 public class InsertTemplateFieldAction {
     private static final Logger LOGGER = Logger.getLogger(InsertTemplateFieldAction.class.getName());
 
-    public InsertTemplateFieldAction(String statement) {
-        LOGGER.info("InsertTemplateFieldAction(" + statement + ")");
+    public InsertTemplateFieldAction(int position) {
+        LOGGER.info("InsertTemplateFieldAction(" + position + ")");
         Stage insertTemplateFieldStage = new Stage();
         insertTemplateFieldStage.setTitle("Insert template fields");
         Resources resources = new Resources();
@@ -23,7 +23,7 @@ public class InsertTemplateFieldAction {
         insertTemplateFieldStage.getScene().getStylesheets()
                 .addAll(ROOT_SCENE_CSS);
         InsertTemplateField controller = resources.getFxmlLoader().getController();
-        //controller.dumpObject(statement);
+        controller.setPosition(position);
         insertTemplateFieldStage.showAndWait();
     }
 }

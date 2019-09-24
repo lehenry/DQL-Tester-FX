@@ -501,4 +501,11 @@ public class QueryWithResult {
         }
         return true;
     }
+
+    void injectTemplateField(int location, String variableName, String templateText) {
+        statement.insertText(location, String.format("{%s}", variableName));
+        statement.appendText(System.lineSeparator());
+        statement.appendText(System.lineSeparator());
+        statement.appendText(templateText);
+    }
 }
