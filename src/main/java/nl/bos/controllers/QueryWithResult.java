@@ -25,6 +25,7 @@ import javafx.util.Callback;
 import nl.bos.AttributeTableColumn;
 import nl.bos.Repository;
 import nl.bos.beans.HistoryItem;
+import nl.bos.beans.Option;
 import nl.bos.contextmenu.ContextMenuOnResultTable;
 import nl.bos.contextmenu.ContextMenuOnStatement;
 import nl.bos.utils.*;
@@ -54,6 +55,8 @@ public class QueryWithResult {
 
     private FXMLLoader connectionWithStatusFxmlLoader;
     private String[] parsedDescription;
+    private List<Option> options = new ArrayList<>();
+    private String originalStatement;
 
     @FXML
     private ComboBox<HistoryItem> historyStatements;
@@ -502,10 +505,28 @@ public class QueryWithResult {
         return true;
     }
 
-    void injectTemplateField(int location, String variableName, String templateText) {
-        statement.insertText(location, String.format("{%s}", variableName));
+    void injectTemplateField(Option option) {
+        options.add(option);
+
+        if (originalStatement == null)
+            originalStatement = statement.getText();
+        if (statement.getText().contains("Options")) {
+            statement.clear();
+            statement.appendText(originalStatement);
+        }
+
+        for (Option item : options) {
+            statement.insertText(item.getLocation(), String.format("{%s}", item.getName()));
+        }
+
         statement.appendText(System.lineSeparator());
         statement.appendText(System.lineSeparator());
-        statement.appendText(templateText);
+        statement.appendText("Options {");
+
+        for (Option item : options) {
+            statement.appendText(System.lineSeparator());
+            statement.appendText(String.valueOf(item));
+        }
+        statement.appendText("}");
     }
 }

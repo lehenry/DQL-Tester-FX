@@ -4,8 +4,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import nl.bos.beans.Option;
 import nl.bos.utils.Controllers;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class InsertTemplateField {
@@ -51,36 +55,26 @@ public class InsertTemplateField {
     @FXML
     private void handleOk(ActionEvent actionEvent) {
         QueryWithResult queryWithResult = (QueryWithResult) Controllers.get("QueryWithResult");
-        queryWithResult.injectTemplateField(position, txtName.getText(), buildTemplateText());
+
+        Option option = new Option();
+        option.setName(txtName.getText());
+        option.setLocation(position);
+        option.setLabel(txtLabel.getText());
+        option.setDefaultValue(txtDefaultValue.getText());
+        option.setMandatory(cbIsMandatory.isSelected());
+        option.setType(String.valueOf(cbType.getValue()));
+        option.setValues(createList(txaType.getText()));
+        queryWithResult.injectTemplateField(option);
+
         ((Stage) btnOk.getScene().getWindow()).close();
-
     }
 
-    private String buildTemplateText() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{Options");
-        builder.append(System.lineSeparator());
-        builder.append(String.format("\t%s.Label = \"%s\"\n", txtName.getText(), txtLabel.getText()));
-        builder.append(String.format("\t%s.Default = \"%s\"\n", txtName.getText(), txtDefaultValue.getText()));
-        builder.append(String.format("\t%s.Mandatory = \"%s\"\n", txtName.getText(), cbIsMandatory.isSelected()));
-        builder.append(String.format("\t%s.Type = \"%s\"\n", txtName.getText(), cbType.getValue()));
-        String values = txaType.getText();
-        if (cbType.getValue().equals("Fixed list")) {
-            values = parseValues(txaType.getText());
-        }
-        builder.append(String.format("\t%s.Values = \"%s\"\n", txtName.getText(), values));
-        builder.append("}");
-        return String.valueOf(builder);
+    private List<String> createList(String values) {
+        List<String> result = new ArrayList<>();
+        Collections.addAll(result, values.split("\n"));
+        return result;
     }
 
-    private String parseValues(String text) {
-        String[] split = text.split("\n");
-        String result = "";
-        for (String item : split) {
-            result = result + "'" + item + "', ";
-        }
-        return result.trim().substring(0, result.length() - 2);
-    }
 
     public void setPosition(int position) {
         this.position = position;
