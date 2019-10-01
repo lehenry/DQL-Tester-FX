@@ -144,9 +144,68 @@ public class QueryWithResult {
     private void onStatementsSelection(HistoryItem newValue, ComboBox<HistoryItem> combo) {
         if (newValue != null) {
             combo.hide();
-            statement.replaceText(0, statement.getLength(), newValue.getQuery());
+
+            statement.clear();
+            String query = newValue.getQuery();
+            statement.insertText(0, query);
+
+            options.clear();
+            if (query.contains("Options")) {
+                addOptionsToList(query);
+            }
+
             LOGGER.log(Level.INFO, "Statement selected");
         }
+    }
+
+    private void addOptionsToList(String query) {
+        String[] optionValues = query.substring(query.indexOf("Options")).split("\n");
+        Option option = new Option();
+        for (String optionValue : optionValues) {
+            if (optionValue.contains(":")) {
+                String[] split = optionValue.split(":");
+
+                String name = split[0];
+                option.setName(name);
+
+                String[] keyValue = split[1].split("=");
+                String key = keyValue[0];
+                String value = "";
+                if (keyValue.length == 2)
+                    value = keyValue[1];
+
+                switch (key) {
+                    case Option.DEFAULT:
+                        option.setDefaultValue(value);
+                        break;
+                    case Option.TYPE:
+                        option.setType(value);
+                        break;
+                    case Option.LABEL:
+                        option.setLabel(value);
+                        break;
+                    case Option.MANDATORY:
+                        option.setMandatory(Boolean.valueOf(value));
+                        break;
+                    case Option.LOCATION:
+                        if (query.indexOf("{") == Integer.valueOf(value))
+                            option.setLocation(Integer.valueOf(value));
+                        else
+                            option.setLocation(query.indexOf("{"));
+                        break;
+                    case Option.VALUES:
+                        List<String> values = new ArrayList<>();
+                        if (!value.equals("")) {
+                            values.addAll(Arrays.asList(value.split(",")));
+                        } else
+                            option.setValues(values);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        options.add(option);
     }
 
     private void loadConnectionWithStatusFxml() {
@@ -506,10 +565,14 @@ public class QueryWithResult {
     }
 
     void injectTemplateField(Option option) {
-        options.add(option);
-
         if (originalStatement == null)
             originalStatement = statement.getText();
+
+        options.clear();
+        addOptionsToList(originalStatement);
+        originalStatement = clearOptions(originalStatement);
+        options.add(option);
+
         if (statement.getText().contains("Options")) {
             statement.clear();
             statement.appendText(originalStatement);
@@ -528,5 +591,12 @@ public class QueryWithResult {
             statement.appendText(String.valueOf(item));
         }
         statement.appendText("}");
+    }
+
+    private String clearOptions(String originalStatement) {
+        String temp = originalStatement.substring(0, originalStatement.indexOf("Options")).trim();
+        String prefix = temp.substring(0, temp.indexOf("{"));
+        String postfix = temp.substring(temp.indexOf("}") + 1);
+        return prefix + postfix;
     }
 }

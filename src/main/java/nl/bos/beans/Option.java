@@ -3,6 +3,12 @@ package nl.bos.beans;
 import java.util.List;
 
 public class Option {
+    public static final String DEFAULT = "Default";
+    public static final String LABEL = "Label";
+    public static final String MANDATORY = "Mandatory";
+    public static final String TYPE = "Type";
+    public static final String VALUES = "Values";
+    public static final String LOCATION = "Location";
     private String name;
     private String label;
     private String defaultValue;
@@ -54,11 +60,12 @@ public class Option {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format("\t%s.Label = \"%s\"\n", this.name, this.label));
-        builder.append(String.format("\t%s.Default = \"%s\"\n", this.name, this.defaultValue));
-        builder.append(String.format("\t%s.Mandatory = \"%s\"\n", this.name, this.isMandatory));
-        builder.append(String.format("\t%s.Type = \"%s\"\n", this.name, this.type));
-        builder.append(String.format("\t%s.Values = \"%s\"\n", this.name, String.join(", ", values)));
+        builder.append(String.format("%s:%s=%s\n", this.name, LOCATION, this.location));
+        builder.append(String.format("%s:%s=%s\n", this.name, LABEL, this.label));
+        builder.append(String.format("%s:%s=%s\n", this.name, DEFAULT, this.defaultValue));
+        builder.append(String.format("%s:%s=%s\n", this.name, MANDATORY, this.isMandatory));
+        builder.append(String.format("%s:%s=%s\n", this.name, TYPE, this.type));
+        builder.append(String.format("%s:%s=%s\n", this.name, VALUES, String.join(",", values)));
         return String.valueOf(builder);
     }
 
