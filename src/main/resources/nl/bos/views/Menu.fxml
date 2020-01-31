@@ -21,6 +21,7 @@
             </Menu>
             <Menu fx:id="menuAdmin" disable="true" mnemonicParsing="false" text="Administration">
                 <MenuItem mnemonicParsing="false" onAction="#manageUsers" text="Manage Users"/>
+                <MenuItem mnemonicParsing="false" onAction="#manageGroups" text="Manage Groups"/>
                 <MenuItem mnemonicParsing="false" onAction="#manageJobs" text="Manage Jobs"/>
                 <MenuItem mnemonicParsing="false" onAction="#manageWorkflows" text="Manage Workflows"/>
             </Menu>

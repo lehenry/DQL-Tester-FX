@@ -1,13 +1,37 @@
 package nl.bos;
 
+import static nl.bos.Constants.MSG_TITLE_INFO_DIALOG;
+
+import java.io.File;
+import java.text.MessageFormat;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.documentum.bpm.IDfWorkflowEx;
 import com.documentum.com.DfClientX;
 import com.documentum.com.IDfClientX;
-import com.documentum.fc.client.*;
+import com.documentum.fc.client.DfServiceException;
+import com.documentum.fc.client.IDfACL;
+import com.documentum.fc.client.IDfClient;
+import com.documentum.fc.client.IDfCollection;
+import com.documentum.fc.client.IDfDocbaseMap;
+import com.documentum.fc.client.IDfGroup;
+import com.documentum.fc.client.IDfPersistentObject;
+import com.documentum.fc.client.IDfQuery;
+import com.documentum.fc.client.IDfSession;
+import com.documentum.fc.client.IDfSessionManager;
+import com.documentum.fc.client.IDfSysObject;
+import com.documentum.fc.client.IDfTypedObject;
+import com.documentum.fc.client.IDfUser;
+import com.documentum.fc.client.IDfWorkitem;
 import com.documentum.fc.client.content.IDfContent;
 import com.documentum.fc.common.DfException;
 import com.documentum.fc.common.DfId;
 import com.documentum.fc.common.IDfLoginInfo;
+
 import javafx.scene.control.TreeItem;
 import nl.bos.Constants.Version;
 import nl.bos.beans.AttachmentObject;
@@ -15,16 +39,8 @@ import nl.bos.beans.PackageObject;
 import nl.bos.beans.WorkflowObject;
 import nl.bos.beans.WorkflowVariable;
 import nl.bos.utils.AppAlert;
+import nl.bos.utils.Calculations;
 import nl.bos.utils.Resources;
-
-import java.io.File;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static nl.bos.Constants.MSG_TITLE_INFO_DIALOG;
 
 public class Repository {
     private static final Logger LOGGER = Logger.getLogger(Repository.class.getName());
@@ -40,7 +56,9 @@ public class Repository {
     private String domain;
     private String secureMode;
     private IDfClient client = null;
-
+    private IDfTypedObject serverMap = null;
+    private IDfDocbaseMap repositoryMap = null;
+    
     private Repository() {
         clientX = new DfClientX();
     }
@@ -68,7 +86,13 @@ public class Repository {
         return userName;
     }
 
-    public IDfClient getClient() {
+    public IDfClient getClient() throws DfException {
+    	if (client == null) {
+        	Instant start = Instant.now();
+            client = clientX.getLocalClient();
+            Instant end = Instant.now();
+            LOGGER.info("Get Local Client" + Calculations.getDurationInSeconds(start, end));
+    	}
         return client;
     }
 
@@ -80,17 +104,18 @@ public class Repository {
     }
 
     public IDfDocbaseMap obtainRepositoryMap() {
-        IDfDocbaseMap repositoryMap = null;
-
         try {
-            if (client == null) {
-                client = clientX.getLocalClient();
-            }
-
-            repositoryMap = client.getDocbaseMap();
-
+            repositoryMap = getClient().getDocbaseMap();
         } catch (DfException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        return repositoryMap;
+    }
+    
+    public IDfDocbaseMap getRepositoryMap() {
+        if(repositoryMap == null) {
+        	repositoryMap = obtainRepositoryMap();
         }
 
         return repositoryMap;
@@ -126,25 +151,32 @@ public class Repository {
     }
 
     public IDfTypedObject obtainServerMap(String selectedRepository) {
-        IDfTypedObject serverMap = null;
-
+        serverMap = null;
+        Instant start = Instant.now();
         try {
-            if (client == null) {
-                client = clientX.getLocalClient();
-            }
-
-            serverMap = client.getServerMap(selectedRepository);
+            serverMap = getClient().getServerMap(selectedRepository);
 
         } catch (DfException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
-
+        Instant end = Instant.now();
+        LOGGER.info("obtainServerMap " + Calculations.getDurationInSeconds(start, end));
+        return serverMap;
+    }
+    
+    public IDfTypedObject getServerMap(String selectedRepository) {
+    	if(serverMap==null) {
+    		serverMap = obtainServerMap(selectedRepository);
+    	}
         return serverMap;
     }
 
     public void createSession() {
         try {
+        	Instant start = Instant.now();
             session = sessionManager.getSession(repositoryName);
+            Instant end = Instant.now();
+            LOGGER.info("createSession " + Calculations.getDurationInSeconds(start, end));
         } catch (DfServiceException e) {
             LOGGER.finest(e.getMessage());
             errorMessage = e.getMessage();
@@ -154,7 +186,9 @@ public class Repository {
 
     public void setClient() {
         try {
-            client = clientX.getLocalClient();
+        	if(client==null) {
+        		client = clientX.getLocalClient();
+        	}
 
         } catch (DfException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
@@ -164,8 +198,10 @@ public class Repository {
     public void createSessionManager() {
         try {
             if (sessionManager == null) {
-                client = clientX.getLocalClient();
-                sessionManager = client.newSessionManager();
+            	Instant start = Instant.now();
+                sessionManager = getClient().newSessionManager();
+                Instant end = Instant.now();
+                LOGGER.info("Create Session manager " + Calculations.getDurationInSeconds(start, end));
             }
 
             IDfLoginInfo loginInfoObj = clientX.getLoginInfo();
@@ -278,6 +314,10 @@ public class Repository {
 
     public IDfUser getUserByName(String userName) throws DfException {
         return session.getUser(userName);
+    }
+    
+    public IDfGroup  getGroupByName(String groupName) throws DfException {
+        return session.getGroup(groupName);
     }
 
     public String getDocbaseOwner() {

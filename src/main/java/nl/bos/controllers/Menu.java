@@ -134,6 +134,11 @@ public class Menu {
 	}
 
     @FXML
+    private void manageGroups(ActionEvent actionEvent) {
+		new ManageGroupsAction();
+	}
+
+    @FXML
     private void manageWorkflows(ActionEvent actionEvent) {
         new ManageWorkflowsAction();
     }

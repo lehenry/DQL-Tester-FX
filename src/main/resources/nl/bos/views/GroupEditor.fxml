@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<AnchorPane prefHeight="750.0" prefWidth="753.0"
+	xmlns="http://javafx.com/javafx/11.0.1"
+	xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="nl.bos.controllers.GroupEditor">
+	<TabPane layoutX="212.0" layoutY="14.0" prefHeight="700.0"
+		prefWidth="476.0" tabClosingPolicy="UNAVAILABLE"
+		AnchorPane.bottomAnchor="53.0" AnchorPane.rightAnchor="14.0"
+		AnchorPane.topAnchor="14.0">
+		<Tab text="General">
+			<AnchorPane minHeight="0.0" minWidth="0.0"
+				prefHeight="700.0" prefWidth="507.0" style="-fx-border-color: grey;">
+				<GridPane layoutX="6.0" layoutY="8.0" prefHeight="651.0"
+					prefWidth="467.0" AnchorPane.topAnchor="0.0">
+					<columnConstraints>
+						<ColumnConstraints hgrow="SOMETIMES"
+							maxWidth="208.0" minWidth="10.0" prefWidth="120.0" />
+						<ColumnConstraints hgrow="SOMETIMES"
+							maxWidth="348.0" minWidth="10.0" prefWidth="347.0" />
+					</columnConstraints>
+					<rowConstraints>
+						<RowConstraints minHeight="10.0" prefHeight="30.0"
+							vgrow="NEVER" />
+						<RowConstraints minHeight="10.0" prefHeight="30.0"
+							vgrow="NEVER" />
+						<RowConstraints minHeight="10.0" prefHeight="30.0"
+							vgrow="NEVER" />
+						<RowConstraints minHeight="10.0" prefHeight="30.0"
+							vgrow="NEVER" />
+						<RowConstraints minHeight="10.0" prefHeight="30.0"
+							vgrow="NEVER" />
+						<RowConstraints minHeight="10.0" prefHeight="30.0"
+							vgrow="NEVER" />
+						<RowConstraints minHeight="10.0" prefHeight="30.0"
+							vgrow="SOMETIMES" />
+						<RowConstraints minHeight="10.0" prefHeight="30.0"
+							vgrow="SOMETIMES" />
+					</rowConstraints>
+					<children>
+						<Label text="Object ID:" GridPane.valignment="CENTER" />
+						<HBox GridPane.columnIndex="1">
+							<children>
+								<TextField fx:id="r_object_id" editable="false"
+									prefHeight="25.0" />
+							</children>
+						</HBox>
+						<Label text="Modify Date:" GridPane.rowIndex="1" />
+						<HBox GridPane.columnIndex="1" GridPane.rowIndex="1">
+							<children>
+								<TextField fx:id="r_modify_date" editable="false"
+									prefHeight="25.0" />
+							</children>
+						</HBox>
+						<Label text="Group Name:" GridPane.rowIndex="2" />
+						<TextField fx:id="group_name" editable="false"
+							prefHeight="25.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+						<Label text="Group Display Name:" GridPane.rowIndex="3" />
+						<TextField fx:id="group_display_name" prefHeight="25.0"
+							GridPane.columnIndex="1" GridPane.rowIndex="3" />
+						<Label text="Administration Group:" GridPane.rowIndex="4" />
+						<HBox GridPane.columnIndex="1" GridPane.rowIndex="4">
+							<children>
+								<ImageView fitHeight="16.0" fitWidth="16.0"
+									onMouseClicked="#emptyGroupAdminField" pickOnBounds="true"
+									preserveRatio="true">
+									<Image url="@../icons/delete.gif" />
+									<HBox.margin>
+										<Insets right="5.0" top="5.0" />
+									</HBox.margin>
+								</ImageView>
+								<TextField fx:id="group_admin" prefHeight="25.0">
+									<HBox.margin>
+										<Insets right="5.0" />
+									</HBox.margin>
+								</TextField>
+								<Button mnemonicParsing="false"
+									onAction="#browseGroupAdmin" prefHeight="25.0"
+									prefWidth="100.0" text="Browse" />
+							</children>
+						</HBox>
+						<Label text="Description:" GridPane.rowIndex="5" />
+						<TextField fx:id="description" prefHeight="25.0"
+							GridPane.columnIndex="1" GridPane.rowIndex="5" />
+						<ListView fx:id="usersNames" prefHeight="200.0"
+							prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+						<ListView fx:id="groupsNames" prefHeight="200.0"
+							prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+						<Label text="Users Names:" GridPane.rowIndex="6" />
+						<Label text="Groups Names:" GridPane.rowIndex="7" />
+
+					</children>
+				</GridPane>
+			</AnchorPane>
+		</Tab>
+	</TabPane>
+	<Button mnemonicParsing="false" prefWidth="80.0" text="Refresh"
+		AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" />
+	<Button disable="true" layoutX="77.0" layoutY="854.0"
+		mnemonicParsing="false" prefWidth="80.0" text="Copy Group"
+		AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="100.0" />
+	<Button disable="true" layoutX="161.0" layoutY="854.0"
+		mnemonicParsing="false" prefWidth="100.0" text="Delete Group"
+		AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="186.0" />
+	<Button fx:id="btnExport" disable="true" layoutX="293.0"
+		layoutY="806.0" mnemonicParsing="false" onAction="#exportGroup"
+		prefWidth="100.0" text="Export Group" AnchorPane.bottomAnchor="14.0"
+		AnchorPane.leftAnchor="293.0" />
+	<Button layoutX="402.0" layoutY="806.0" mnemonicParsing="false"
+		prefWidth="100.0" text="New Group" AnchorPane.bottomAnchor="14.0"
+		AnchorPane.leftAnchor="402.0" />
+	<Button fx:id="btnUpdate" disable="true" layoutX="491.0"
+		layoutY="806.0" mnemonicParsing="false" onAction="#updateGroup"
+		prefWidth="80.0" text="Update" AnchorPane.bottomAnchor="14.0"
+		AnchorPane.leftAnchor="491.0" />
+	<Button defaultButton="true" layoutX="629.0" layoutY="854.0"
+		mnemonicParsing="false" onAction="#closeWindow" prefWidth="80.0"
+		text="Exit" AnchorPane.bottomAnchor="14.0"
+		AnchorPane.rightAnchor="14.0" />
+	<AnchorPane layoutX="44.0" layoutY="14.0" prefHeight="700.0"
+		prefWidth="201.0" AnchorPane.leftAnchor="0.0"
+		AnchorPane.topAnchor="0.0">
+		<Label text="Group:" AnchorPane.leftAnchor="8.0"
+			AnchorPane.topAnchor="8.0" />
+		<TextField fx:id="groupFilter"
+			onKeyReleased="#updateGroupFilter" prefWidth="180.0"
+			AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="5.0" />
+		<ListView fx:id="groupList" prefHeight="660.0"
+			prefWidth="180.0" AnchorPane.bottomAnchor="2.0"
+			AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="38.0" />
+		<Label fx:id="groupListCount" layoutX="8.0" layoutY="665.0"
+			prefWidth="35.0" style="-fx-border-color: grey;" text="0"
+			AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="8.0">
+			<padding>
+				<Insets bottom="1.0" left="2.0" right="2.0" top="1.0" />
+			</padding>
+		</Label>
+	</AnchorPane>
+</AnchorPane>

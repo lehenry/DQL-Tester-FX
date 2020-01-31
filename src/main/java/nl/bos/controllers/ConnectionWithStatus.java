@@ -1,15 +1,31 @@
 package nl.bos.controllers;
 
+import static nl.bos.Constants.ROOT_SCENE_CSS;
+
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.json.JSONObject;
+
 import com.documentum.fc.client.IDfCollection;
 import com.documentum.fc.client.IDfSession;
 import com.documentum.fc.client.IDfUser;
 import com.documentum.fc.common.DfException;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -19,16 +35,6 @@ import nl.bos.utils.AppAlert;
 import nl.bos.utils.Calculations;
 import nl.bos.utils.Controllers;
 import nl.bos.utils.Resources;
-import org.json.JSONObject;
-
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static nl.bos.Constants.ROOT_SCENE_CSS;
 
 public class ConnectionWithStatus implements EventHandler<WindowEvent> {
     private static final Logger LOGGER = Logger.getLogger(ConnectionWithStatus.class.getName());
@@ -36,7 +42,7 @@ public class ConnectionWithStatus implements EventHandler<WindowEvent> {
     private final Repository repository = Repository.getInstance();
 
     private static final Stage loginStage = new Stage();
-    private final FXMLLoader fxmlLoader;
+    private FXMLLoader fxmlLoader = null;
 
     private Resources resources = new Resources();
 
@@ -122,18 +128,6 @@ public class ConnectionWithStatus implements EventHandler<WindowEvent> {
      */
     public ConnectionWithStatus() {
         Controllers.put(this.getClass().getSimpleName(), this);
-
-        loginStage.initModality(Modality.APPLICATION_MODAL);
-        loginStage.setTitle("Documentum Login");
-
-
-        VBox loginPane = (VBox) resources.loadFXML("/nl/bos/views/Login.fxml");
-        fxmlLoader = resources.getFxmlLoader();
-        loginStage.setScene(new Scene(loginPane));
-        loginStage.getScene().getStylesheets()
-                .addAll(ROOT_SCENE_CSS);
-
-        loginStage.setOnCloseRequest(this);
     }
 
     @FXML
@@ -173,7 +167,7 @@ public class ConnectionWithStatus implements EventHandler<WindowEvent> {
         IDfUser user = session.getUser(session.getLoginUserName());
 
         lblStatus.setText(session.getDocbaseName());
-        ttStatus.setText(String.format("Connected repository: %s\nRepository hostname: %s\nRepository ID: %s\nConnection Broker hostname: %s\nConnection Broker port: %s", session.getDocbaseName(), repository.obtainServerMap(session.getDocbaseName()).getString("i_host_name"), session.getDocbaseId(), repository.obtainRepositoryMap().getRepeatingString("i_host_name", 0), repository.obtainRepositoryMap().getRepeatingString("i_port_number", 0)));
+        ttStatus.setText(String.format("Connected repository: %s\nRepository hostname: %s\nRepository ID: %s\nConnection Broker hostname: %s\nConnection Broker port: %s", session.getDocbaseName(), repository.getServerMap(session.getDocbaseName()).getString("i_host_name"), session.getDocbaseId(), repository.getRepositoryMap().getRepeatingString("i_host_name", 0), repository.getRepositoryMap().getRepeatingString("i_port_number", 0)));
 
         lblUsernameOS.setText(user.getUserOSName());
         ttOSUsername.setText(String.format("Operating System Username: %s\nDefault Folder: %s", user.getUserOSName(), user.getDefaultFolder()));
@@ -261,8 +255,7 @@ public class ConnectionWithStatus implements EventHandler<WindowEvent> {
     @FXML
     private void handleConnect(ActionEvent actionEvent) {
         LOGGER.info(String.valueOf(actionEvent.getSource()));
-        repository.setClient();
-        Login loginController = fxmlLoader.getController();
+        Login loginController = getLoginController();
         loginController.initialize();
         loginStage.showAndWait();
     }
@@ -316,8 +309,25 @@ public class ConnectionWithStatus implements EventHandler<WindowEvent> {
 
     @FXML
     private void handleDisconnect() {
-        Login loginController = fxmlLoader.getController();
+        Login loginController =  getLoginController();
         loginController.initialize();
         loginStage.showAndWait();
+    }
+    
+    private Login getLoginController() {
+		if(fxmlLoader==null) {
+		        loginStage.initModality(Modality.APPLICATION_MODAL);
+		        loginStage.setTitle("Documentum Login");
+		
+		
+		        VBox loginPane = (VBox) resources.loadFXML("/nl/bos/views/Login.fxml");
+		        fxmlLoader = resources.getFxmlLoader();
+		        loginStage.setScene(new Scene(loginPane));
+		        loginStage.getScene().getStylesheets()
+		                .addAll(ROOT_SCENE_CSS);
+		
+		        loginStage.setOnCloseRequest(this);
+		}
+		return fxmlLoader.getController();
     }
 }

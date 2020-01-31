@@ -17,10 +17,12 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import nl.bos.Repository;
 import nl.bos.utils.AppAlert;
+import nl.bos.utils.Calculations;
 import nl.bos.utils.Resources;
 import nl.bos.utils.UIUtils;
 
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -79,15 +81,17 @@ public class Login {
             ttSecureMode.setText("Defines whether to establish a secure or native (insecure) connection.\nDefault uses the settings from dfc.properties or the Server Config Object.");
 
             if (repository.getClient() != null) {
-                IDfDocbaseMap repositoryMap = repository.obtainRepositoryMap();
+                IDfDocbaseMap repositoryMap = repository.getRepositoryMap();
                 if (repositoryMap != null) {
+                	Instant start = Instant.now();
                     //noinspection deprecation
                     String hostName = repositoryMap.getHostName();
                     lblServer.setText(hostName);
 
                     LOGGER.info(MessageFormat.format("Repositories for Connection Broker: {0}", hostName));
                     LOGGER.info(MessageFormat.format("Total number of Repositories: {0}", repositoryMap.getDocbaseCount()));
-
+                    Instant end = Instant.now();
+                    LOGGER.info(Calculations.getDurationInSeconds(start, end));
                     chbRepository.getItems().clear();
                     for (int i = 0; i < repositoryMap.getDocbaseCount(); i++) {
                         LOGGER.info(MessageFormat.format("Repository {0}: {1}", i + 1, repositoryMap.getDocbaseName(i)));
@@ -212,7 +216,7 @@ public class Login {
                 AppAlert.information(MSG_TITLE_INFO_DIALOG, "No connection broker map found!");
             } else {
                 AppAlert.informationWithPanel("Info", formatContent(repositoryMap));
-            }
+            }	
         } catch (DfException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
             UIUtils.showExpendableExceptionAlert(ERROR_TITLE,
